@@ -31,7 +31,7 @@ namespace Tests {
         /* //////////////////////////////// */
 
         enum DataTypeCode : int {
-            AllTypes,
+            AllTypesCode,
         };
 
         struct AllTypes {

@@ -44,6 +44,8 @@ class SerialCommunicator:
             self._serial_port.baudrate = 115200
             self._serial_port.dtr = True
             self._serial_port.port = self._serial_port_name
+            self._serial_port.timeout = 2
+            self._serial_port.write_timeout = 2
             self._serial_port.open()
             self._is_serial_port_open = True
 
