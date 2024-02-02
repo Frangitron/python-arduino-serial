@@ -6,6 +6,8 @@ Bidirectionnal serial communication (C Structs and Python Dataclasses) between P
 - generate C Header files
 - send and receive data from both Python and Arduino through serial communication
 
+Meant to be used with [Arduino Python Serial](https://github.com/MrFrangipane/arduino-python-serial)
+
 ## Usage
 
 - Data serialization examples can be found in [the tests](tests/test_bytes_serialization.py)
