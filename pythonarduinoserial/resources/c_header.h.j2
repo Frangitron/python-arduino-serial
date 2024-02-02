@@ -43,7 +43,7 @@ namespace {{ namespace }} {
 
     const std::map<SerialProtocol::DataTypeCode, uint16_t> SerialProtocol::DataSize = {
         {% for name in structs_names -%}
-        {SerialProtocol::DataTypeCode::{{ name }}, sizeof(SerialProtocol::{{  name }})},
+        {SerialProtocol::DataTypeCode::{{ name }}Code, sizeof(SerialProtocol::{{  name }})},
         {%- endfor %}
     };
 }

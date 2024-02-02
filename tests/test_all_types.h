@@ -47,7 +47,7 @@ namespace Tests {
     };
 
     const std::map<SerialProtocol::DataTypeCode, uint16_t> SerialProtocol::DataSize = {
-        {SerialProtocol::DataTypeCode::AllTypes, sizeof(SerialProtocol::AllTypes)},
+        {SerialProtocol::DataTypeCode::AllTypesCode, sizeof(SerialProtocol::AllTypes)},
     };
 }
 
