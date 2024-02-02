@@ -38,7 +38,7 @@ def FloatType():
 
 
 def BooleanType():
-    return Annotated[bool, SerializationAnnotation(c_name="bool", struct_format_token="c")]
+    return Annotated[bool, SerializationAnnotation(c_name="bool", struct_format_token="?")]
 
 
 def BytesType(length):

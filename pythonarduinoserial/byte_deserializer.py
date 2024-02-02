@@ -2,6 +2,7 @@ import struct
 from typing import get_type_hints, Annotated, get_origin, get_args, Any
 
 from pythonarduinoserial.types import SerializationAnnotation
+from pythonarduinoserial.byte_formatter import ByteFormatter
 
 
 class ByteDeserializer:
@@ -9,9 +10,13 @@ class ByteDeserializer:
     def __init__(self, input_: bytes):
         self._input = input_
         self._index = 0
+        self._values = list()
 
     def to_object(self, type_):
         output = type_()
+
+        format_ = ByteFormatter().make_format(type_)
+        self._values = struct.unpack(format_, self._input)
 
         items = get_type_hints(output, include_extras=True).items()
         for name, type_hint in items:
@@ -33,22 +38,13 @@ class ByteDeserializer:
         assert isinstance(annotation, SerializationAnnotation)
         value = None
 
-        if type_ == bytes:
-            value = bytes(self._input[self._index:self._index + annotation.length])
-            self._index += annotation.length
-
-        elif type_ == bool:
-            value = bool(self._input[self._index])
+        if type_ in [bytes, int, float, bool]:
+            value = self._values[self._index]
             self._index += 1
 
         elif type_ == str:
-            value = self._input[self._index:self._index + annotation.length].decode('ascii')
-            self._index += annotation.length
-
-        elif type_ in [float, int]:
-            size = struct.calcsize(annotation.struct_format)
-            value = struct.unpack(annotation.struct_format, self._input[self._index:self._index + size])[0]
-            self._index += size
+            value = self._values[self._index].decode('ascii')
+            self._index += 1
 
         return value
 
