@@ -10,3 +10,18 @@ Bidirectionnal serial communication (C Structs and Python Dataclasses) between P
 
 - Data serialization examples can be found in [the tests](tests/test_bytes_serialization.py)
 - Header generation example can be found in [the tests](tests/test_c_header_exporter.py)
+
+## Protocol
+
+Message topology (bytes)
+
+|    0    |     1     |     2     |  n   |  n + 3  |
+|:-------:|:---------:|:---------:|:----:|:-------:|
+|  begin  | direction | data type | data |   end   |
+| ------- |  header   |  header   | data | ------- |
+
+**note** data is omitted when sending a reception request (only data type is sent)
+
+## TODO
+
+- [ ] Nested structure support for CHeaderExporter

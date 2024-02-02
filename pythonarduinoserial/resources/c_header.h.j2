@@ -1,0 +1,51 @@
+#ifndef {{ include_guard_name }}
+#define {{ include_guard_name }}
+
+#include <map>
+
+#include <Arduino.h>
+
+
+namespace {{ namespace }} {
+
+    class SerialProtocol {
+        /*
+         * Message topology
+         *
+         * ```
+         * |   0   |    1      |     2     |   n  | 3 + n |
+         * | begin | direction | data type | data |  end  |
+         * |-------| ------ header ------- | data |-------|
+         * ```
+         */
+    public:
+        enum class Direction : int {
+            Send,
+            Receive
+        };
+
+        static constexpr uint8_t headerSize = 2;
+        static constexpr byte flagBegin = 0x3c;
+        static constexpr byte flagEnd = 0x3e;
+
+        /* //////////////////////////////// */
+
+        enum DataTypeCode : int {
+            {% for name in structs_names -%}
+            {{ name }},
+            {%- endfor %}
+        };
+
+{{ structs }}
+
+        static const std::map<DataTypeCode, uint16_t> DataSize;
+    };
+
+    const std::map<SerialProtocol::DataTypeCode, uint16_t> SerialProtocol::DataSize = {
+        {% for name in structs_names -%}
+        {SerialProtocol::DataTypeCode::{{ name }}, sizeof(SerialProtocol::{{  name }})},
+        {%- endfor %}
+    };
+}
+
+#endif // {{ include_guard_name }}

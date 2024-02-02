@@ -1,6 +1,7 @@
 """
 This demonstrates usage of `pythonarduinoserial.types` to export C header files
 """
+import os.path
 from dataclasses import dataclass
 from unittest import TestCase
 
@@ -29,7 +30,11 @@ class Nested:
 class TestCHeaderExporter(TestCase):
 
     def setUp(self):
-        self.exporter = CHeaderExporter()
+        self.exporter = CHeaderExporter(
+            struct_types=[AllTypes],
+            namespace="Tests",
+            include_guard_name="TESTS_ALL_TYPES_H"
+        )
 
         #
         # Modify each value to ensure default values are used anyways
@@ -45,19 +50,11 @@ class TestCHeaderExporter(TestCase):
         self.nested.nested = self.all_types
         self.nested.nesteds = [self.all_types, self.all_types]
 
-        self._all_types_as_c_header = """
-struct AllTypes {
-    char fieldString[10] = "          ";
-    float fieldFloat = 0.0;
-    bool fieldBoolean = false;
-    int fieldInteger = 0;
-    int fieldIntegers[3] = {0, 0, 0};
-    byte fieldBytes[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
-};
-""".strip()
+        with open(os.path.dirname(__file__) + '/test_all_types.h', 'r') as c_header_file:
+            self._all_types_as_c_header = c_header_file.read()
 
     def test_export_all_types(self):
-        output = self.exporter.export(self.all_types)
+        output = self.exporter.export().strip()
 
         self.assertEqual(
             self._all_types_as_c_header,

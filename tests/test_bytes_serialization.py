@@ -63,16 +63,16 @@ class TestSerializeToBytes(TestCase):
         output = self.serializer.to_bytes(self.all_types)
 
         self.assertEqual(
-            output,
-            self._all_types_as_bytes
+            self._all_types_as_bytes,
+            output
         )
 
     def test_serialize_nested(self):
         output = self.serializer.to_bytes(self.nested)
 
         self.assertEqual(
-            output,
-            self._nested_as_bytes
+            self._nested_as_bytes,
+            output
         )
 
     def test_deserialize_all_types(self):
@@ -80,8 +80,8 @@ class TestSerializeToBytes(TestCase):
         output = deserializer.to_object(AllTypes)
 
         self.assertEqual(
-            output,
-            self.all_types
+            self.all_types,
+            output
         )
 
     def test_deserialize_nested(self):
@@ -89,6 +89,6 @@ class TestSerializeToBytes(TestCase):
         output = deserializer.to_object(Nested)
 
         self.assertEqual(
-            output,
-            self.nested
+            self.nested,
+            output
         )
