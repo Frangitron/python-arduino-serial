@@ -35,7 +35,7 @@ namespace Tests {
         };
 
         struct AllTypes {
-            char fieldString[10] = "          ";
+            char fieldString[11] = "          ";
             float fieldFloat = 0.0;
             bool fieldBoolean = false;
             int fieldInteger = 0;

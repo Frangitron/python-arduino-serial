@@ -76,7 +76,7 @@ class CHeaderExporter:
             c_name += f"[{annotation.length}]"
 
         elif type_ == str:
-            c_name += f"[{annotation.length}]"
+            c_name += f"[{annotation.length + 1}]"  # add null terminating character
 
         self._append_to_structs_definitions(f"{c_type} {c_name} = {c_value};")
 
