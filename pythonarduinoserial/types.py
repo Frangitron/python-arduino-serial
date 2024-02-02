@@ -22,11 +22,11 @@ class SerializationAnnotation:
 
     @property
     def struct_format(self):
-        return f"<{self._struct_format_token * self.length}"
+        return f"{self.length if self.length > 1 else ''}{self._struct_format_token}"
 
 
 def StringType(length):
-    return Annotated[str, SerializationAnnotation(c_name="char", struct_format_token="c", length=length)]
+    return Annotated[str, SerializationAnnotation(c_name="char", struct_format_token="s", length=length)]
 
 
 def IntegerType():
@@ -42,7 +42,7 @@ def BooleanType():
 
 
 def BytesType(length):
-    return Annotated[bytes, SerializationAnnotation(c_name="byte", struct_format_token="c", length=length)]
+    return Annotated[bytes, SerializationAnnotation(c_name="byte", struct_format_token="s", length=length)]
 
 
 def ListType(type_, length):

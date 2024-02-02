@@ -46,16 +46,18 @@ class TestSerializeToBytes(TestCase):
         self.nested.nesteds = [self.all_types, self.all_types]
 
         self._all_types_as_bytes = (
-            b'\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a'  # string 
+            b'\x41\x42\x43\x44\x45\x46\x47\x48\x49\x00'  # string with null terminator as last char
+            b'\x00\x00'  # padding
             b'\x00\x00\x00\x3f'  # float
             b'\x00'  # bool
+            b'\x00\x00\x00'  # padding
             b'\x05\x00\x00\x00'  # int
             b'\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00'  # [int, int, int]
             b'\x01\x02\x03\x04\x05'  # [byte, byte, byte, byte, byte]
         )
 
         self._nested_as_bytes = (
-            b'\x20\x20\x20\x20\x20' +  # string
+            b'\x20\x20\x20\x20\x00' +  # string with null terminator as last char
             self._all_types_as_bytes * 3
         )
 

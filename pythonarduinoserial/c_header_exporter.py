@@ -76,7 +76,7 @@ class CHeaderExporter:
             c_name += f"[{annotation.length}]"
 
         elif type_ == str:
-            c_name += f"[{annotation.length + 1}]"  # add null terminating character
+            c_name += f"[{annotation.length}]"  # null terminating character is last character
 
         self._append_to_structs_definitions(f"{c_type} {c_name} = {c_value};")
 
@@ -107,9 +107,9 @@ class CHeaderExporter:
 
         elif type_ == str:
             if len(value) < annotation.length:
-                return f'"{ value + " " * (annotation.length - len(value)) }"'
+                return f'"{ value + " " * (annotation.length - len(value) - 1) }"'
             else:
-                return f'"{ value[:annotation.length] }"'
+                return f'"{ value[:annotation.length - 1] }"'
 
         elif type_ in [float, int]:
             return str(value)

@@ -71,13 +71,14 @@ class SerialCommunicator:
         _logger.debug(f"Sent {hexlify(message, sep=' ')}")
 
     def receive(self, struct_type):
+        self.connect()
         if not self._is_serial_port_open:
+            _logger.warning(f"Serial port is closed {self._serial_port_name}")
             return
 
         type_code = self._structs.index(struct_type)
         message = bytearray([self.Flag.Begin, self.Direction.Receive, type_code, self.Flag.End])
 
-        self.connect()
         self._serial_port.write(message)
 
         time.sleep(self._wait_before_receive)
@@ -87,9 +88,13 @@ class SerialCommunicator:
             response += self._serial_port.read()
 
         if len(response) == 0:
-            _logger.warning(f"Nothing received while requesting {type_code}")
+            _logger.warning(f"Nothing received while requesting {struct_type.__name__}")
             return
 
         _logger.info(f"Received {hexlify(response, sep=' ')}")
+        _logger.info(
+            f"Parsing {hexlify(response[self.header_size + 1:-1], sep=' ')}, "
+            f"len={len(response[self.header_size + 1:-1])}"
+        )
 
-        return ByteDeserializer(response).to_object(struct_type)
+        return ByteDeserializer(response[self.header_size + 1:-1]).to_object(struct_type)
