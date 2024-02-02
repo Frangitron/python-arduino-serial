@@ -8,5 +8,5 @@ Bidirectionnal serial communication (C Structs and Python Dataclasses) between P
 
 ## Usage
 
-- Data serialization examples can be found in [the tests]()
-- Header generation example can be found in [the tests]()
+- Data serialization examples can be found in [the tests](tests/test_bytes_serialization.py)
+- Header generation example can be found in [the tests](tests/test_c_header_exporter.py)
