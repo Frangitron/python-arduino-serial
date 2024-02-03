@@ -1,5 +1,7 @@
 # Python Arduino Serial
 
+**/!\ BETA VERSION**
+
 Bidirectionnal serial communication (C Structs and Python Dataclasses) between Python and Arduino
 
 - declare type hinted Dataclasses in Python
@@ -26,4 +28,5 @@ Message topology (bytes)
 
 ## TODO
 
+- [ ] Deal with byte alignment and place 'x's in struct format
 - [ ] Nested structure support for CHeaderExporter
