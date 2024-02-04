@@ -39,7 +39,9 @@ class ByteSerializer:
             self.to_bytes(value)
 
     def _serialize_value(self, value, type_, annotation):
-        assert isinstance(value, type_)
+        if not isinstance(value, type_):
+            raise TypeError(f"{value} is not of type {type_}")
+
         assert isinstance(annotation, SerializationAnnotation)
 
         if type_ == bytes:

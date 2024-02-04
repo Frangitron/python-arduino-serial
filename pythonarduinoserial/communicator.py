@@ -24,26 +24,27 @@ class SerialCommunicator:
         Receive = 1
 
     def __init__(self, structs: list):
+        self.serial_port_name = None
+
         self._structs = structs
         self._serial_port: serial.Serial = None
-        self._serial_port_name = None
         self._is_serial_port_open = False
 
     def set_port_name(self, name):
         self.disconnect()
-        self._serial_port_name = name
+        self.serial_port_name = name
         self.connect()
         self.disconnect()
 
     def connect(self):
-        if self._serial_port_name is None:
+        if self.serial_port_name is None:
             return False
 
         if not self._is_serial_port_open:
             self._serial_port = serial.Serial()
             self._serial_port.baudrate = 115200
             self._serial_port.dtr = True
-            self._serial_port.port = self._serial_port_name
+            self._serial_port.port = self.serial_port_name
             self._serial_port.timeout = 2
             self._serial_port.write_timeout = 2
             self._serial_port.open()
@@ -73,7 +74,7 @@ class SerialCommunicator:
     def receive(self, struct_type):
         self.connect()
         if not self._is_serial_port_open:
-            _logger.warning(f"Serial port is closed {self._serial_port_name}")
+            _logger.warning(f"Serial port is closed {self.serial_port_name}")
             return
 
         type_code = self._structs.index(struct_type)
@@ -91,10 +92,12 @@ class SerialCommunicator:
             _logger.warning(f"Nothing received while requesting {struct_type.__name__}")
             return
 
-        _logger.info(f"Received {hexlify(response, sep=' ')}")
-        _logger.info(
+        _logger.debug(f"Received {hexlify(response, sep=' ')}")
+        _logger.debug(
             f"Parsing {hexlify(response[self.header_size + 1:-1], sep=' ')}, "
             f"len={len(response[self.header_size + 1:-1])}"
         )
+
+        self.disconnect()
 
         return ByteDeserializer(response[self.header_size + 1:-1]).to_object(struct_type)

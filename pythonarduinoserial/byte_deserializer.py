@@ -16,7 +16,10 @@ class ByteDeserializer:
         output = type_()
 
         format_ = ByteFormatter().make_format(type_)
-        self._values = struct.unpack(format_, self._input)
+        try:
+            self._values = struct.unpack(format_, self._input)
+        except struct.error:
+            return None
 
         items = get_type_hints(output, include_extras=True).items()
         for name, type_hint in items:
