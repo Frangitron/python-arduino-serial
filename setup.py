@@ -3,7 +3,7 @@ from codecs import open
 from setuptools import setup, find_packages
 
 
-NAME = 'pyside6-helpers'
+NAME = 'python-arduino-serial'
 VERSION = '0.0.0'
 DESCRIPTION = 'Bits of code used in most PySide based projects'
 AUTHOR = 'Frangitron'
