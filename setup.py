@@ -4,8 +4,8 @@ from setuptools import setup, find_packages
 
 
 NAME = 'python-arduino-serial'
-VERSION = '0.0.0'
-DESCRIPTION = 'Bits of code used in most PySide based projects'
+VERSION = '0.0.1'
+DESCRIPTION = 'Bidirectionnal serial communication (C Structs and Python Dataclasses) between Python and Arduino'
 AUTHOR = 'Frangitron'
 AUTHOR_EMAIL = 'contact@frangitron.com'
 

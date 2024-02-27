@@ -37,6 +37,10 @@ class CHeaderExporter:
         with open(self._template_filepath, "r") as template_file:
             template = Template(template_file.read())
 
+        # Fixme: really has impact ?
+        template.environment.trim_blocks = True
+        template.environment.lstrip_blocks = True
+
         return template.render({
             "namespace": self._namespace,
             "include_guard_name": self._include_guard_name,
