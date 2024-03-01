@@ -24,7 +24,7 @@ class SerialCommunicator:
         Receive = 1
 
     def __init__(self, structs: list):
-        self.serial_port_name = None
+        self.serial_port_name: str = None
 
         self._structs = structs
         self._serial_port: serial.Serial = None
