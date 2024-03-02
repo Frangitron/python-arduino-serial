@@ -89,7 +89,11 @@ class SerialCommunicator:
             response += self._serial_port.read()
 
         if len(response) == 0:
-            _logger.warning(f"Nothing received while requesting {struct_type.__name__}")
+            _logger.warning(
+                f"Nothing received while requesting {struct_type.__name__}, "
+                f"probably not a LEDBoard on this port "
+                f"({self.serial_port_name}) "
+            )
             return
 
         _logger.debug(f"Received {hexlify(response, sep=' ')}")
