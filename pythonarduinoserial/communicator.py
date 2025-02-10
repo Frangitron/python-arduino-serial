@@ -67,7 +67,8 @@ class SerialCommunicator:
 
         self.connect()
         self._serial_port.write(message)
-        self.disconnect()
+        self._serial_port.flush()
+        # self.disconnect()
 
         _logger.debug(f"Sent {hexlify(message, sep=' ')}")
 
