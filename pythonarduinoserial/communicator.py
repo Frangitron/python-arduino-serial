@@ -66,8 +66,14 @@ class SerialCommunicator:
         message += bytearray([self.Flag.End])
 
         self.connect()
-        self._serial_port.write(message)
-        self._serial_port.flush()
+        try:
+            self._serial_port.write(message)
+            self._serial_port.flush()
+        except serial.SerialException:
+            self._is_serial_port_open = False
+            self.connect()
+            self._serial_port.write(message)
+            self._serial_port.flush()
         # self.disconnect()
 
         _logger.debug(f"Sent {hexlify(message, sep=' ')}")
