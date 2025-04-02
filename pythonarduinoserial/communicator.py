@@ -87,7 +87,12 @@ class SerialCommunicator:
         type_code = self._structs.index(struct_type)
         message = bytearray([self.Flag.Begin, self.Direction.Receive, type_code, self.Flag.End])
 
-        self._serial_port.write(message)
+        try:
+            self._serial_port.write(message)
+        except serial.SerialException:
+            self._is_serial_port_open = False
+            self.connect()
+            self._serial_port.write(message)
 
         time.sleep(self._wait_before_receive)
 
