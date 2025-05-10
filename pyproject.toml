@@ -1,0 +1,32 @@
+[build-system]
+requires = [
+  "jinja2",
+  "pyserial",
+  "python-helpers@git+https://github.com/MrFrangipane/python-helpers",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pythonarduinoserial"
+description = "Bidirectionnal serial communication (C Structs and Python Dataclasses) between Python and Arduino"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [
+  { name = "Frangitron", email = "contact@frangitron.com" }
+]
+maintainers = [
+  { name = "Frangitron", email = "contact@frangitron.com" }
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3 :: Only",
+]
+keywords = ["python", "frangitron"]
+dynamic = ["version"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.hatch.metadata]
+allow-direct-references = true

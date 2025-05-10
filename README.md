@@ -10,6 +10,10 @@ Bidirectionnal serial communication (C Structs and Python Dataclasses) between P
 
 Meant to be used with [Arduino Python Serial](https://github.com/MrFrangipane/arduino-python-serial)
 
+## Android
+
+If `usb4a` is present, it will be used as the USB Serial backend, otherwise `pyserial` is used
+
 ## Usage
 
 - Data serialization examples can be found in [the tests](tests/test_bytes_serialization.py)

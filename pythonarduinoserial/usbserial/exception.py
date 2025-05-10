@@ -1,0 +1,4 @@
+
+
+class UsbSerialException(IOError):
+    pass

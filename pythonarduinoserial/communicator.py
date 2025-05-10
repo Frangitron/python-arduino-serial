@@ -2,10 +2,10 @@ from binascii import hexlify
 import logging
 import time
 
-import serial
-
-from pythonarduinoserial.byte_serializer import ByteSerializer
 from pythonarduinoserial.byte_deserializer import ByteDeserializer
+from pythonarduinoserial.byte_serializer import ByteSerializer
+from pythonarduinoserial.usbserial.api import get_usb_serial
+from pythonarduinoserial.usbserial.exception import UsbSerialException
 
 _logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class SerialCommunicator:
         self.serial_port_name: str = None
 
         self._structs = structs
-        self._serial_port: serial.Serial = None
+        self._serial_port = get_usb_serial()
         self._is_serial_port_open = False
 
     def set_port_name(self, name):
@@ -41,13 +41,7 @@ class SerialCommunicator:
             return False
 
         if not self._is_serial_port_open:
-            self._serial_port = serial.Serial()
-            self._serial_port.baudrate = 115200
-            self._serial_port.dtr = True
-            self._serial_port.port = self.serial_port_name
-            self._serial_port.timeout = 2
-            self._serial_port.write_timeout = 2
-            self._serial_port.open()
+            self._serial_port.open(self.serial_port_name)
             self._is_serial_port_open = True
 
         return True
@@ -66,15 +60,13 @@ class SerialCommunicator:
         message += bytearray([self.Flag.End])
 
         self.connect()
+        # TODO check if needed for Android ?
         try:
             self._serial_port.write(message)
-            self._serial_port.flush()
-        except serial.SerialException:
+        except UsbSerialException:
             self._is_serial_port_open = False
             self.connect()
             self._serial_port.write(message)
-            self._serial_port.flush()
-        # self.disconnect()
 
         _logger.debug(f"Sent {hexlify(message, sep=' ')}")
 
@@ -89,7 +81,7 @@ class SerialCommunicator:
 
         try:
             self._serial_port.write(message)
-        except serial.SerialException:
+        except UsbSerialException:
             self._is_serial_port_open = False
             self.connect()
             self._serial_port.write(message)
@@ -97,7 +89,7 @@ class SerialCommunicator:
         time.sleep(self._wait_before_receive)
 
         response = bytearray()
-        while self._serial_port.in_waiting > 0:
+        while not self._serial_port.is_buffer_empty():
             response += self._serial_port.read()
 
         if len(response) == 0:
