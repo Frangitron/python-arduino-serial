@@ -2,7 +2,6 @@
 requires = [
   "jinja2",
   "pyserial",
-  "python-helpers@git+https://github.com/MrFrangipane/python-helpers",
 ]
 build-backend = "setuptools.build_meta"
 
