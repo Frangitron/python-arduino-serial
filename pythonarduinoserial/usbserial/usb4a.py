@@ -1,4 +1,3 @@
-import kivy
 from usb4a import usb
 from usbserial4a import serial4a
 

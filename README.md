@@ -10,9 +10,9 @@ Bidirectionnal serial communication (C Structs and Python Dataclasses) between P
 
 Meant to be used with [Arduino Python Serial](https://github.com/MrFrangipane/arduino-python-serial)
 
-## Android
+## Kivy on Android
 
-If `usb4a` is present, it will be used as the USB Serial backend, otherwise `pyserial` is used
+If `usb4a` and `usbserial4a` are present, they will be used as the USB Serial backend, otherwise `pyserial` is used
 
 ## Usage
 
