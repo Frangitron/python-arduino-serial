@@ -22,3 +22,7 @@ classifiers = [
 ]
 keywords = ["python", "frangitron"]
 dynamic = ["version"]
+
+[build-system]
+requires = ["setuptools>=46.0"]
+build-backend = "setuptools.build_meta"
