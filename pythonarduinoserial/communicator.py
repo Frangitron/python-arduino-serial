@@ -10,6 +10,9 @@ from pythonarduinoserial.usbserial.exception import UsbSerialException
 _logger = logging.getLogger(__name__)
 
 
+# FIXME remove null terminator during serial communication
+
+
 class SerialCommunicator:
     _wait_before_receive = 0.2
 
