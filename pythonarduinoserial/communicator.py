@@ -2,6 +2,8 @@ from binascii import hexlify
 import logging
 import time
 
+import serial
+
 from pythonarduinoserial.byte_deserializer import ByteDeserializer
 from pythonarduinoserial.byte_serializer import ByteSerializer
 from pythonarduinoserial.usbserial.api import get_usb_serial
@@ -44,8 +46,11 @@ class SerialCommunicator:
             return False
 
         if not self._is_serial_port_open:
-            self._serial_port.open(self.serial_port_name)
-            self._is_serial_port_open = True
+            try:
+                self._serial_port.open(self.serial_port_name)
+                self._is_serial_port_open = True
+            except serial.serialutil.SerialException:
+                raise IOError(f"Port {self.serial_port_name} is not available")
 
         return True
 
