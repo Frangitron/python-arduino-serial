@@ -28,11 +28,14 @@ class Usb4AUsbSerial(AbstractUsbSerial):
         return [device.getDeviceName() for device in usb.get_usb_device_list()]
 
     def open(self, name: str):
-        self._serial_port = serial4a.get_serial_port(
-            device_name=name,
-            baudrate=115200,
-            dsrdtr=True,
-        )
+        try:
+            self._serial_port = serial4a.get_serial_port(
+                device_name=name,
+                baudrate=115200,
+                dsrdtr=True,
+            )
+        except Exception as e:
+            raise UsbSerialException(e)
 
     def read(self) -> bytearray:
         return self._serial_port.read(self._serial_port.in_waiting)

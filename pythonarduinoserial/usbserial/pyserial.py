@@ -20,7 +20,10 @@ class PySerialUsbSerial(AbstractUsbSerial):
         self._serial_port = None
 
     def close(self):
-        self._serial_port.close()
+        try:
+            self._serial_port.close()
+        except serial.SerialException as e:
+            raise UsbSerialException(e)
 
     def is_buffer_empty(self) -> bool:
         return self._serial_port.in_waiting == 0
@@ -29,13 +32,16 @@ class PySerialUsbSerial(AbstractUsbSerial):
         return [port.name for port in list_ports.comports()]
 
     def open(self, name: str):
-        self._serial_port = serial.Serial()
-        self._serial_port.baudrate = 115200
-        self._serial_port.dtr = True
-        self._serial_port.port = name
-        self._serial_port.timeout = 2
-        self._serial_port.write_timeout = 2
-        self._serial_port.open()
+        try:
+            self._serial_port = serial.Serial()
+            self._serial_port.baudrate = 115200
+            self._serial_port.dtr = True
+            self._serial_port.port = name
+            self._serial_port.timeout = 2
+            self._serial_port.write_timeout = 2
+            self._serial_port.open()
+        except serial.SerialException as e:
+            raise UsbSerialException(e)
 
     def read(self) -> bytearray:
         return self._serial_port.read(self._serial_port.in_waiting)
