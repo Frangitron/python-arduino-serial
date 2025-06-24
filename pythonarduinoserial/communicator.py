@@ -1,18 +1,15 @@
 from binascii import hexlify
 import logging
 import time
+from typing import Type
 
-import serial
-
+from pythonarduinoserial.base_c_struct import BaseCStruct
 from pythonarduinoserial.byte_deserializer import ByteDeserializer
 from pythonarduinoserial.byte_serializer import ByteSerializer
 from pythonarduinoserial.usbserial.api import get_usb_serial
 from pythonarduinoserial.usbserial.exception import UsbSerialException
 
 _logger = logging.getLogger(__name__)
-
-
-# FIXME remove null terminator during serial communication
 
 
 class SerialCommunicator:
@@ -46,11 +43,8 @@ class SerialCommunicator:
             return False
 
         if not self._is_serial_port_open:
-            try:
-                self._serial_port.open(self.serial_port_name)
-                self._is_serial_port_open = True
-            except serial.serialutil.SerialException:
-                raise IOError(f"Port {self.serial_port_name} is not available")
+            self._serial_port.open(self.serial_port_name)
+            self._is_serial_port_open = True
 
         return True
 
@@ -59,9 +53,12 @@ class SerialCommunicator:
             self._serial_port.close()
             self._is_serial_port_open = False
 
-    def send(self, struct_):
+    def send(self, struct_: BaseCStruct):
         data = ByteSerializer().to_bytes(struct_)
-        type_code = self._structs.index(type(struct_))
+        try:
+            type_code = self._structs.index(type(struct_))
+        except ValueError:
+            raise UsbSerialException(f"Struct {type(struct_)} is missing from structs list. Have you passed it to the constructor?")
 
         message = bytearray([self.Flag.Begin, self.Direction.Send, type_code])
         message += data
@@ -78,11 +75,10 @@ class SerialCommunicator:
 
         _logger.debug(f"Sent {hexlify(message, sep=' ')}")
 
-    def receive(self, struct_type):
+    def receive(self, struct_type: Type[BaseCStruct]) -> BaseCStruct | None:
         self.connect()
         if not self._is_serial_port_open:
-            _logger.warning(f"Serial port is closed {self.serial_port_name}")
-            return
+            raise UsbSerialException("Serial port is not open")
 
         type_code = self._structs.index(struct_type)
         message = bytearray([self.Flag.Begin, self.Direction.Receive, type_code, self.Flag.End])
@@ -101,12 +97,11 @@ class SerialCommunicator:
             response += self._serial_port.read()
 
         if len(response) == 0:
-            _logger.warning(
+            raise UsbSerialException(
                 f"Nothing received while requesting {struct_type.__name__}, "
                 f"probably not a LEDBoard on this port "
                 f"({self.serial_port_name}) "
             )
-            return
 
         _logger.debug(f"Received {hexlify(response, sep=' ')}")
         _logger.debug(
@@ -116,4 +111,8 @@ class SerialCommunicator:
 
         self.disconnect()
 
-        return ByteDeserializer(response[self.header_size + 1:-1]).to_object(struct_type)
+        deserialized = ByteDeserializer(response[self.header_size + 1:-1]).to_object(struct_type)
+        if deserialized is None:
+            raise UsbSerialException(f"Failed to deserialize {struct_type.__name__}")
+
+        return deserialized

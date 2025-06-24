@@ -5,7 +5,16 @@ from pythonarduinoserial.usbserial.abstract import AbstractUsbSerial
 from pythonarduinoserial.usbserial.exception import UsbSerialException
 
 
+# TODO use UsbSerialException everywhere
 class PySerialUsbSerial(AbstractUsbSerial):
+    """
+    Manages USB serial communication using the PySerial library
+
+    This class provides methods to interact with USB serial ports, including
+    opening and closing connections, reading from and writing to the port, and
+    listing available ports. It allows for efficient management of serial
+    communication for devices connected via USB.
+    """
 
     def __init__(self):
         self._serial_port = None
