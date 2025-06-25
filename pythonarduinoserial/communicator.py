@@ -19,7 +19,7 @@ _logger = logging.getLogger(__name__)
 
 
 class SerialCommunicator:
-    _wait_before_receive = 0.015
+    _wait_before_receive = 0.03
 
     header_size = 2
 
