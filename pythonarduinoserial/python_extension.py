@@ -1,8 +1,8 @@
 from binascii import hexlify
 
 
-def without_terminator(s: str):
-    return s.rstrip('\x00')
+def stripped_without_terminator(s: str):
+    return s.rstrip('\x00').strip()
 
 
 def bytes_to_string(b: bytes):

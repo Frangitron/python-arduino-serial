@@ -39,6 +39,10 @@ class SerialCommunicator:
         self._serial_port = get_usb_serial()
         self._is_serial_port_open = False
 
+    @staticmethod
+    def get_port_names():
+        return get_usb_serial().list_names()
+
     def set_port_name(self, port_name):
         self._disconnect()
         self.serial_port_name = port_name
