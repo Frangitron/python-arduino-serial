@@ -17,7 +17,7 @@ class PySerialUsbSerial(AbstractUsbSerial):
     """
 
     def __init__(self):
-        self._serial_port = None
+        self._serial_port: serial.Serial | None = None
 
     def close(self):
         try:

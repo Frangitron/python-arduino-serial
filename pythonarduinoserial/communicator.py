@@ -1,7 +1,7 @@
 from binascii import hexlify
+from typing import Type
 import logging
 import time
-from typing import Type
 
 from pythonarduinoserial.base_c_struct import BaseCStruct
 from pythonarduinoserial.byte_deserializer import ByteDeserializer
@@ -19,7 +19,7 @@ _logger = logging.getLogger(__name__)
 
 
 class SerialCommunicator:
-    _wait_before_receive = 0.2
+    _wait_before_receive = 0.015
 
     header_size = 2
 
@@ -31,6 +31,7 @@ class SerialCommunicator:
         Send = 0
         Receive = 1
 
+    # FIXME: create a SerialProtocol class ?
     def __init__(self, structs: list):
         self.serial_port_name: str = None
 
@@ -38,32 +39,19 @@ class SerialCommunicator:
         self._serial_port = get_usb_serial()
         self._is_serial_port_open = False
 
-    def set_port_name(self, name):
-        self.disconnect()
-        self.serial_port_name = name
-        self.connect()
-        self.disconnect()
+    def set_port_name(self, port_name):
+        self._disconnect()
+        self.serial_port_name = port_name
 
-    def connect(self):
-        if self.serial_port_name is None:
-            return False
-
-        if not self._is_serial_port_open:
-            self._serial_port.open(self.serial_port_name)
-            self._is_serial_port_open = True
-
-        return True
-
-    def disconnect(self):
-        if self._is_serial_port_open:
-            self._serial_port.close()
-            self._is_serial_port_open = False
+    def __del__(self):
+        self._disconnect()
 
     def send(self, struct_: BaseCStruct):
         data = ByteSerializer().to_bytes(struct_)
         try:
             type_code = self._structs.index(type(struct_))
         except ValueError:
+            # FIXME: create a SerialProtocol class ?
             raise UsbSerialStructNotRegisteredError(
                 f"Struct {type(struct_)} is missing from structs list. Have you passed it to the constructor?"
             )
@@ -72,32 +60,19 @@ class SerialCommunicator:
         message += data
         message += bytearray([self.Flag.End])
 
-        self.connect()
-        # TODO check if needed for Android ?
-        try:
-            self._serial_port.write(message)
-        except UsbSerialException:
-            self._is_serial_port_open = False
-            self.connect()
-            self._serial_port.write(message)
+        self._connect()
+        self._serial_port.write(message)
 
         _logger.debug(f"Sent {hexlify(message, sep=' ')}")
 
     def receive(self, struct_type: Type[BaseCStruct]) -> BaseCStruct | None:
-        self.connect()
+        self._connect()
         if not self._is_serial_port_open:
             raise UsbSerialPortNotOpenedError(f"Serial port {self.serial_port_name} is not open")
 
         type_code = self._structs.index(struct_type)
         message = bytearray([self.Flag.Begin, self.Direction.Receive, type_code, self.Flag.End])
-
-        try:
-            self._serial_port.write(message)
-        except UsbSerialException:
-            self._is_serial_port_open = False
-            self.connect()
-            self._serial_port.write(message)
-
+        self._serial_port.write(message)
         time.sleep(self._wait_before_receive)
 
         response = bytearray()
@@ -117,10 +92,24 @@ class SerialCommunicator:
             f"len={len(response[self.header_size + 1:-1])}"
         )
 
-        self.disconnect()
-
         deserialized = ByteDeserializer(response[self.header_size + 1:-1]).to_object(struct_type)
         if deserialized is None:
-            raise UsbSerialInvalidDataError(f"Failed to deserialize {struct_type.__name__} ({self.serial_port_name})")
+            raise UsbSerialInvalidDataError(
+                f"Failed to deserialize {struct_type.__name__} ({self.serial_port_name}). "
+                f"Maybe timings are too short ?"
+            )
 
         return deserialized
+
+    def _connect(self):
+        if self.serial_port_name is None:
+            raise UsbSerialException("Serial port name is not set")
+
+        if not self._is_serial_port_open:
+            self._serial_port.open(self.serial_port_name)
+            self._is_serial_port_open = True
+
+    def _disconnect(self):
+        if self._is_serial_port_open:
+            self._serial_port.close()
+            self._is_serial_port_open = False
